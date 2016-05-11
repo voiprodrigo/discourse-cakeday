@@ -33,8 +33,11 @@ function oldPluginCode() {
 }
 
 function initializeCakeday(api, siteSettings) {
-
   if (siteSettings.cakeday_enabled) {
+    api.decorateWidget("hamburger-menu:generalLinks", _ => {
+      return { route: 'cakeday.anniversaries', label: 'anniversaries.title' };
+    });
+
     api.includePostAttributes('user_created_at');
 
     api.addPosterIcon((cfs, attrs) => {
@@ -48,6 +51,10 @@ function initializeCakeday(api, siteSettings) {
   }
 
   if (siteSettings.cakeday_birthday_enabled) {
+    api.decorateWidget("hamburger-menu:generalLinks", _ => {
+      return { route: 'cakeday.birthdays', label: 'birthdays.title' };
+    });
+
     api.addPosterIcon(cfs => {
       const dob = cfs.date_of_birth;
       if (!Ember.isEmpty(dob) && isSameDay(dob)) {
@@ -64,6 +71,9 @@ export default {
 
   initialize(container) {
     const siteSettings = container.lookup('site-settings:main');
+    const store = container.lookup('store:main')
+
+    store.addPluralization('anniversary', 'anniversaries');
     withPluginApi('0.1', api => initializeCakeday(api, siteSettings), { noApi: oldPluginCode });
   }
 };
